@@ -58,14 +58,7 @@ class InventoryManager:
     def __init__(self):
         self.inventory = []
 
-    def add_book(self, title, author, price, quantity, category):
-        book = {
-            "title": title,
-            "author": author,
-            "price": price,
-            "quantity": quantity,
-            "category": category
-        }
+    def add_book(self, book):
         self.inventory.append(book)
 
     def assign_category(self, book_title, category):
@@ -124,63 +117,69 @@ class InventoryManager:
 
 class ShoppingCart:
 
-    def __init__(self):
-        self.items = []
+    def __init__(self, inventory):
+        self.books = []
         self.total_price = 0
+        self.inventory = inventory
 
-    def add_items(self, book):
-        for item in self.items:
-            if item == book:
-                item.quantity += book.get_quantity()
+    def add_book(self, book):
+        for item in self.books:
+            if item.get_title == book.get_title():
+                item.get_quantity += book.get_quantity()
                 break
             else:
-                self.items.append(book)
+                self.books.append(book)
             self.total_price += book.get_total_price()
 
-    def remove_item(self, book):
-        for item in self.items:
-            if item == book:
+    def remove_book(self, book_title):
+        for item in self.books:
+            if item.get_title == book_title:
                 self.total_price -= item.get_total_price()
-                self.items.remove(item)
+                self.books.remove(item)
                 break
 
     def view_cart(self):
-        for item in self.items:
-            print("Title:", item['book'].title)
-            print("Price:", item['book'].price)
-            print("Quantity:", item['quantity'])
-            print("Total Price:", item['book'].price * item['quantity'])
+        for item in self.books:
+            print("Title:", item.get_title())
+            print("Price:", item.get_price())
+            print("Quantity:", item.get_quantity())
+            print("Total Price:", item.get_total_price())
             print()
 
-    def calculate_total(self):
+    def get_total_price(self):
         return self.total_price
 
     def empty_cart(self):
-        self.items = []
+        self.books = []
         self.total_price = 0
 
     def update_quantity(self, book, new_quantity):
-        for item in self.items:
-            if item['bool'] == book:
-                self.total_price -= item['book'].price * item['quantity']
-                item['quantity'] = new_quantity
-                self.total_price += item['book'].price * new_quantity
+        for item in self.books:
+            if item.get_title == book.get_title():
+                self.total_price -= item.get_price() * item.get_quantity()
+                item.set_quantity(new_quantity)
+                self.total_price += item.get_price() * new_quantity
                 break
+
+    def get_books(self):
+        return self.books
 
 
 class OrderProcessor:
 
-    def __init__(self):
+    def __init__(self, shopping_cart, inventory):
         self.orders = []
+        self.shopping_cart = shopping_cart
+        self.inventory = inventory
 
-    def place_order(self, shopping_cart):
+    def place_order(self):
         order_id = self.generate_order_id()
         order_date = datetime.datetime.now()
         order = {
             "order_id": order_id,
             "order_date": order_date,
-            "items": shopping_cart.items,
-            "total_price": shopping_cart.total_price
+            "books": self.shopping_cart.get_books(),
+            "total_price": self.shopping_cart.get_total_price()
         }
         self.orders.append(order)
         self.process_order(order)
@@ -189,8 +188,9 @@ class OrderProcessor:
         return uuid.uuid4()
 
     def process_order(self, order):
-        for item in order['items']:
-            item['book'].quantity -= item['quantity']
+        for book in order['books']:
+            self.inventory.remove_book(book.get_title())
+            self.shopping_cart.remove_book(book.get_title())
 
     def view_orders(self):
         for order in self.orders:
@@ -199,14 +199,14 @@ class OrderProcessor:
     def print_order_details(self, order):
         print("Order ID:", order["order_id"])
         print("Order Date:", order["order_date"])
-        print("Items Purchased:")
-        for item in order["items"]:
-            print("Title:", item['book'].title)
-            print("Price:", item['book'].price)
-            print("Quantity:", item['quantity'])
-            print("Total Price:", item['book'].price * item['quantity'])
+        print("Book Purchased:")
+        for item in order["books"]:
+            print("Title:", item.get_title())
+            print("Price:", item.get_price())
+            print("Quantity:", item.get_quantity())
+            print("Total Price for books:", item.get_total_price())
             print()
-        print("Total Price:", order["total_price"])
+        print("Total Price for whole order:", order["total_price"])
 
     def generate_report(self):
         total_orders = len(self.orders)
