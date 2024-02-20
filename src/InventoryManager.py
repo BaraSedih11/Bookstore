@@ -18,7 +18,17 @@ class InventoryManager:
         """
         if not isinstance(book, Book):
             raise TypeError("book must be an instance of Book")
-        self._inventory.append(book)
+
+        if not self.search_book(book.title):
+            self._inventory.append(book)
+
+        else:
+            book_copy = Book(book.title, book.author, book.price, book.quantity, book.category)
+
+            for item in self._inventory:
+                if item.title == book_copy.title:
+                    item.quantity += book_copy.quantity
+                    break
 
     def assign_category(self, book_title, category):
         """

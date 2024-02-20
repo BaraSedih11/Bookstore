@@ -13,6 +13,15 @@ class TestInventoryManager(unittest.TestCase):
         self.manager.add_book(self.book1)
         self.assertEqual(len(self.manager.inventory), 1)
 
+        book3 = Book("Book1", "Author1", 10.0, 5)
+        self.manager.add_book(book3)
+        self.assertEqual(len(self.manager.inventory), 1)
+        self.assertEqual(self.manager.inventory[0].quantity, 10)
+
+        self.manager.add_book(self.book2)
+        self.assertEqual(len(self.manager.inventory), 2)
+        self.assertEqual(self.manager.inventory[1].quantity, 10)
+
     def test_add_book_with_invalid_data(self):
         with self.assertRaises(TypeError):
             self.manager.add_book("Invalid Book Data")
