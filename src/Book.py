@@ -50,7 +50,8 @@ class Book:
             str: String representation of the Book object.
 
         """
-        return f"Title: {self._title}, Author: {self._author}, Price: {self._price}, Quantity: {self._quantity}, Category: {self._category}"
+        return (f"Title: {self._title}, Author: {self._author}, Price: {self._price}, Quantity: {self._quantity}, "
+                f"Category: {self._category}")
 
     @property
     def title(self):
