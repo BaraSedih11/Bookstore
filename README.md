@@ -1,8 +1,17 @@
 <div style="display:flex; justify-content: center; align-items: center ; height" 100vh" align=center>
   <img src='https://github.com/BaraSedih11/Bookstore/assets/98843912/51d3309c-21ae-4e6c-b237-b2d32869a3dd' /> 
+
+  <br />
+  <br />
+  
+   ![GitHub repo size](https://img.shields.io/github/repo-size/BaraSedih11/Bookstore) ![GitHub repo file count (file type)](https://img.shields.io/github/directory-file-count/BaraSedih11/Bookstore) [![Python Version](https://img.shields.io/badge/python-3.8-blue)](https://www.python.org/downloads/release/python-380/)
+[![Pip Version](https://img.shields.io/badge/pip-21.0-orange)](https://pypi.org/project/pip/21.0/)
+ ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/BaraSedih11/Bookstore/master)
+   [![codecov](https://codecov.io/gh/<username>/<repository>/branch/master/graph/badge.svg)](https://codecov.io/gh/<username>/<repository>)
+
 </div>
 <br />
-<br />
+
 This repository contains a Python-based bookstore management system. The system is designed to facilitate inventory management, shopping cart functionality, and order processing for a bookstore.
 
 ## Features
