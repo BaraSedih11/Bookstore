@@ -1,5 +1,8 @@
-# Bookstore Management System
-
+<div style="display:flex; justify-content: center; align-items: center ; height" 100vh" align=center>
+  <img src='https://github.com/BaraSedih11/Bookstore/assets/98843912/51d3309c-21ae-4e6c-b237-b2d32869a3dd' /> 
+</div>
+<br />
+<br />
 This repository contains a Python-based bookstore management system. The system is designed to facilitate inventory management, shopping cart functionality, and order processing for a bookstore.
 
 ## Features
