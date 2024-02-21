@@ -51,6 +51,9 @@ class InventoryManager:
         """
         View the inventory, printing out details of each book.
         """
+        if len(self._inventory) == 0:
+            print("No books added yet")
+
         for book in self._inventory:
             print("Title:", book.title)
             print("Author:", book.author)

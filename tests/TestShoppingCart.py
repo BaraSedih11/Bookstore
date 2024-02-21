@@ -21,29 +21,45 @@ class TestShoppingCart(unittest.TestCase):
         self.assertEqual(len(self.cart.books), 0)
 
     def test_add_book(self):
-        self.cart.add_book(self.book1)
+
+        with self.assertRaises(ValueError):
+            self.cart.add_book(self.book1.title, self.book1.quantity)
+
+        # Add the books to the inventory
+        self.inventory_manager.add_book(self.book1)
+        self.inventory_manager.add_book(self.book2)
+
+        # Test adding the first book to the cart
+        self.cart.add_book(self.book1.title, self.book1.quantity)
         self.assertEqual(len(self.cart.books), 1)
         self.assertEqual(self.cart.total_price, 50.0)
 
         # Adding the same book should increase the quantity
-        self.cart.add_book(self.book1)
+        self.cart.add_book(self.book1.title, self.book1.quantity)
         self.assertEqual(len(self.cart.books), 1)
         self.assertEqual(self.cart.books[0].quantity, 10)
         self.assertEqual(self.cart.total_price, 100.0)
 
         # Adding another book
-        self.cart.add_book(self.book2)
+        self.cart.add_book(self.book2.title, self.book2.quantity)
         self.assertEqual(len(self.cart.books), 2)
         self.assertEqual(self.cart.total_price, 300.0)
 
         # Adding book with invalid type
         with self.assertRaises(TypeError):
-            self.cart.add_book("invalid_book")
+            self.cart.add_book(123, 10)
 
     def test_remove_book(self):
-        # Adding books to the cart
-        self.cart.add_book(self.book1)
-        self.cart.add_book(self.book2)
+
+        with self.assertRaises(ValueError):
+            self.cart.remove_book(self.book1.title, self.book1.quantity)
+
+        # Adding books to the cart and inventory
+        self.inventory_manager.add_book(self.book1)
+        self.inventory_manager.add_book(self.book2)
+
+        self.cart.add_book(self.book1.title, self.book1.quantity)
+        self.cart.add_book(self.book2.title, self.book2.quantity)
 
         # Removing a quantity of Book1
         self.cart.remove_book("Book1", 3)  # Removing 3 copies of Book1
@@ -64,30 +80,41 @@ class TestShoppingCart(unittest.TestCase):
             self.cart.remove_book(123, 1)  # Attempting to remove a book with an invalid type
 
     def test_view_cart(self):
-        self.cart.add_book(self.book1)
-        self.cart.add_book(self.book2)
+        self.inventory_manager.add_book(self.book1)
+        self.inventory_manager.add_book(self.book2)
+
+        self.cart.add_book(self.book1.title, self.book1.quantity)
+        self.cart.add_book(self.book2.title, self.book2.quantity)
         self.cart.view_cart()  # Just to see if it runs without errors
 
     def test_empty_cart(self):
-        self.cart.add_book(self.book1)
-        self.cart.add_book(self.book2)
+        self.inventory_manager.add_book(self.book1)
+        self.inventory_manager.add_book(self.book2)
+
+        self.cart.add_book(self.book1.title, self.book1.quantity)
+        self.cart.add_book(self.book2.title, self.book2.quantity)
         self.cart.empty_cart()
         self.assertEqual(len(self.cart.books), 0)
         self.assertEqual(self.cart.total_price, 0)
 
     def test_update_quantity(self):
-        self.cart.add_book(self.book1)
-        self.cart.update_quantity(self.book1, 7)
-        self.assertEqual(self.cart.books[0].quantity, 7)
-        self.assertEqual(self.cart.total_price, 70.0)
+        self.inventory_manager.add_book(self.book1)
+
+        with self.assertRaises(ValueError):
+            self.cart.update_quantity(self.book1.title, 3)
+
+        self.cart.add_book(self.book1.title, self.book1.quantity)
+        self.cart.update_quantity(self.book1.title, 3)
+        self.assertEqual(self.cart.books[0].quantity, 3)
+        self.assertEqual(self.cart.total_price, 30.0)
 
         # Updating quantity with invalid book type
         with self.assertRaises(TypeError):
-            self.cart.update_quantity("invalid_book", 5)
+            self.cart.update_quantity(123, 5)
 
         # Updating quantity with negative value
         with self.assertRaises(ValueError):
-            self.cart.update_quantity(self.book1, -5)
+            self.cart.update_quantity(self.book1.title, -5)
 
     def test_inventory(self):
         self.assertEqual(self.cart.inventory, self.inventory_manager)
@@ -95,6 +122,13 @@ class TestShoppingCart(unittest.TestCase):
     def test_books_setter(self):
         # Setter automatically adds books to cart
         new_books = [self.book1, self.book2]
+
+        with self.assertRaises(ValueError):
+            self.cart.books = new_books
+
+        self.inventory_manager.add_book(self.book1)
+        self.inventory_manager.add_book(self.book2)
+
         self.cart.books = new_books
         self.assertEqual(len(self.cart.books), 2)
         self.assertEqual(self.cart.total_price, 250.0)
@@ -104,8 +138,16 @@ class TestShoppingCart(unittest.TestCase):
             self.cart.books = "invalid_books"
 
     def test_search_book(self):
-        self.cart.add_book(self.book1)
-        self.cart.add_book(self.book2)
+
+        with self.assertRaises(ValueError):
+            self.cart.add_book(self.book1.title, self.book1.quantity)
+            self.cart.add_book(self.book2.title, self.book2.quantity)
+
+        self.inventory_manager.add_book(self.book1)
+        self.inventory_manager.add_book(self.book2)
+
+        self.cart.add_book(self.book1.title, self.book1.quantity)
+        self.cart.add_book(self.book2.title, self.book2.quantity)
         found_book = self.cart.search_book("Book1")
         self.assertIsNotNone(found_book)
         self.assertEqual(found_book.title, "Book1")

@@ -11,16 +11,17 @@ import datetime
 
 class TestOrderProcessor(unittest.TestCase):
     def setUp(self):
-        self.shopping_cart = ShoppingCart(InventoryManager())
         self.inventory = InventoryManager()
+        self.shopping_cart = ShoppingCart(self.inventory)
+
         self.processor = OrderProcessor(self.shopping_cart, self.inventory)
         self.book1 = Book("Book1", "Author1", 10.0, 5)
         self.book2 = Book("Book2", "Author2", 20.0, 10)
 
         self.inventory.add_book(self.book1)
         self.inventory.add_book(self.book2)
-        self.shopping_cart.add_book(self.book1)
-        self.shopping_cart.add_book(self.book2)
+        self.shopping_cart.add_book(self.book1.title, self.book1.quantity)
+        self.shopping_cart.add_book(self.book2.title, self.book2.quantity)
 
     def test_init(self):
         self.assertIsInstance(self.processor.shopping_cart, ShoppingCart)

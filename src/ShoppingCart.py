@@ -20,24 +20,39 @@ class ShoppingCart:
         self._total_price = 0
         self._inventory = inventory
 
-    def add_book(self, book):
+    def add_book(self, title, quantity):
         """
         Adds a book to the shopping cart.
 
         If the book is already in the cart, its quantity is updated. Otherwise, the book is added.
 
         Args:
-            book (Book): The book to add to the cart.
+            title (str): The book title to add to the cart.
+            quantity (float): The quantity of books to add to the cart.
         """
-        if not isinstance(book, Book):
-            raise TypeError("Book must be an instance of Book")
-        for item in self._books:
-            if item.title == book.title:
-                item.quantity += book.quantity
-                break
-        else:
-            self._books.append(book)
-        self.update_total_price()
+        if not isinstance(title, str):
+            raise TypeError("Title must be string")
+        if not isinstance(quantity, (int, float)) or quantity <= 0:
+            raise TypeError("Quantity must be non-negative number")
+
+        found = False
+        for book in self._inventory.inventory:
+            if book.title == title:
+                found = True
+                if quantity > book.quantity:
+                    quantity = book.quantity
+
+                for item in self._books:
+                    if item.title == title:
+                        item.quantity += quantity
+                        break
+                else:
+                    new_book = Book(book.title, book.author, book.price, quantity, book.category)
+                    self._books.append(new_book)
+                self.update_total_price()
+
+        if not found:
+            raise ValueError("Book not found in inventory")
 
     def remove_book(self, book_title, quantity):
         """
@@ -61,13 +76,17 @@ class ShoppingCart:
                 else:
                     item.quantity -= quantity
                 break
-
+        else:
+            raise ValueError("Book must be in the cart to remove")
         self.update_total_price()
 
     def view_cart(self):
         """
         Displays the contents of the shopping cart.
         """
+        if len(self._books) == 0:
+            print("Shopping cart is empty")
+
         for item in self._books:
             print("Title:", item.title)
             print("Price:", item.price)
@@ -94,22 +113,35 @@ class ShoppingCart:
         self._books = []
         self.update_total_price()
 
-    def update_quantity(self, book, new_quantity):
+    def update_quantity(self, book_title, new_quantity):
         """
         Updates the quantity of a book in the shopping cart.
 
         Args:
-            book (Book): The book whose quantity is to be updated.
+            book_title (str): The book title whose quantity is to be updated.
             new_quantity (int): The new quantity of the book.
         """
-        if not isinstance(book, Book):
-            raise TypeError("Book must be an instance of Book")
+        if not isinstance(book_title, str):
+            raise TypeError("Title must be string")
         if not isinstance(new_quantity, int) or new_quantity < 0:
             raise ValueError("New quantity must be a non-negative integer")
-        for item in self._books:
-            if item.title == book.title:
-                item.quantity = new_quantity
-                break
+
+        for book in self._inventory.inventory:
+            if book.title == book_title:
+                if new_quantity <= book.quantity:
+                    pass
+                else:
+                    new_quantity = book.quantity
+
+                found = False
+
+                for item in self._books:
+                    if item.title == book_title:
+                        found = True
+                        item.quantity = new_quantity
+                        break
+                if not found:
+                    raise ValueError("Book must be in the cart")
 
         self.update_total_price()
 
@@ -143,7 +175,7 @@ class ShoppingCart:
         self._books = []
 
         for book in new_books:
-            self.add_book(book)
+            self.add_book(book.title, book.quantity)
 
         self.update_total_price()
 
@@ -159,7 +191,12 @@ class ShoppingCart:
         """
         if not isinstance(book_title, str):
             raise TypeError("book_title must be a string")
-        for book in self._books:
-            if book.title == book_title:
-                return book
-        return None
+
+        for item in self._inventory.inventory:
+            if item.title == book_title:
+                for book in self._books:
+                    if book.title == book_title:
+                        return book
+                return None
+        else:
+            raise ValueError("Book must be in the inventory")

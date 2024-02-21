@@ -29,9 +29,8 @@ def print_order_details(order):
         print("Title:", item.title)
         print("Price:", item.price)
         print("Quantity:", item.quantity)
-        print("Total Price for books:", item.get_total_price())
+        print("Total Price for the order:", item.get_total_price())
         print()
-    print("Total Price for whole order:", order["total_price"])
 
 
 class OrderProcessor:
@@ -89,13 +88,15 @@ class OrderProcessor:
             order (dict): The order to process.
         """
         for book in order['books']:
-            self.inventory.remove_book(book.title, book.quantity)
             self.shopping_cart.remove_book(book.title, book.quantity)
+            self.inventory.remove_book(book.title, book.quantity)
 
     def view_orders(self):
         """
         View the details of all orders.
         """
+        if len(self.orders) == 0:
+            print("No orders added yet")
         for order in self.orders:
             print_order_details(order)
 
